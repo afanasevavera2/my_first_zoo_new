@@ -1,0 +1,16 @@
+/* Дополнительные стили для логотипа */
+#unity-logo {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 20px auto;
+    background-image: url('logo.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    animation: logoPulse 2s infinite alternate;
+}
+
+@keyframes logoPulse {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(1.1); opacity: 0.8; }
+}

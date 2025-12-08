@@ -1,0 +1,6 @@
+{
+  "name": "TelegramGame",
+  "description": "WebGL template optimized for Telegram Mini Apps",
+  "version": "1.0",
+  "supportedUnityVersions": ["2021.3", "2022.3", "6000.0"]
+}
