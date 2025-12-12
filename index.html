@@ -1,218 +1,364 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes" />
-  <title>Maze | Unity WebGL in Telegram</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <!-- ⬇⬇⬇ ДОБАВЬТЕ ЭТУ СТРОКУ ⬇⬇⬇ -->
-  <link rel="stylesheet" href="style.css">
-  <style>
-    html,body { height:100%; margin:0; background:#000; }
-    #unity-container { position:fixed; inset:0; width:100%; height:100%; overflow:hidden; }
-    canvas { width:100%; height:100%; display:block; }
-    
-    /* Анимированный загрузочный экран */
-    #unity-loading-bar {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      width: 300px;
-      text-align: center;
-      color: white;
-      font-family: Arial, sans-serif;
-      background: rgba(0, 0, 0, 0.8);
-      padding: 40px 30px;
-      border-radius: 20px;
-      border: 2px solid transparent;
-      animation: borderGlow 2s infinite alternate;
-    }
-
-    /* ... остальной ваш CSS код без изменений ... */
-
-    @keyframes borderGlow {
-      0% { border-color: #ff0080; box-shadow: 0 0 20px rgba(255, 0, 128, 0.3); }
-      100% { border-color: #8000ff; box-shadow: 0 0 30px rgba(128, 0, 255, 0.5); }
-    }
-
-    /* Логотип - ЗАМЕНИТЕ НА СВОЙ */
-    #unity-logo {
-      width: 80px;
-      height: 80px;
-      margin: 0 auto 20px auto;
-      background: linear-gradient(135deg, #ff0080, #8000ff);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      font-weight: bold;
-      animation: logoSpin 3s infinite linear;
-      box-shadow: 0 0 20px rgba(255, 0, 128, 0.5);
-    }
-
-    @keyframes logoSpin {
-      0% { transform: rotate(0deg) scale(1); }
-      50% { transform: rotate(180deg) scale(1.1); }
-      100% { transform: rotate(360deg) scale(1); }
-    }
-
-    /* Текст загрузки */
-    #loading-text {
-      font-size: 18px;
-      margin-bottom: 20px;
-      background: linear-gradient(90deg, #ff0080, #8000ff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: textPulse 1.5s infinite alternate;
-    }
-
-    @keyframes textPulse {
-      0% { opacity: 0.7; }
-      100% { opacity: 1; }
-    }
-
-    /* Прогресс-бар */
-    #unity-progress-bar-empty {
-      width: 100%;
-      height: 12px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-      overflow: hidden;
-      position: relative;
-    }
-
-    #unity-progress-bar-full {
-      width: 0%;
-      height: 100%;
-      background: linear-gradient(90deg, #ff0080, #8000ff);
-      border-radius: 10px;
-      transition: width 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    #unity-progress-bar-full::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-      animation: progressShine 1.5s infinite;
-    }
-
-    @keyframes progressShine {
-      0% { left: -100%; }
-      100% { left: 100%; }
-    }
-
-    /* Проценты */
-    #progress-percent {
-      margin-top: 10px;
-      font-size: 14px;
-      color: #ccc;
-    }
-
-    /* Предупреждения */
-    #unity-warning {
-      position: absolute;
-      left: 50%;
-      top: 5%;
-      transform: translateX(-50%);
-      background: #cc0000;
-      padding: 10px;
-      border-radius: 5px;
-      color: white;
-      display: none;
-    }
-  </style>
-</head>
-<body>
-  <div id="unity-container">
-    <canvas id="unity-canvas" tabindex="-1"></canvas>
-    <div id="unity-loading-bar">
-      <!-- ЛОГОТИП - ЗАМЕНИТЕ НА СВОЙ -->
-      <div id="unity-logo">M</div>
-      
-      <div id="loading-text">Загрузка игры</div>
-      
-      <div id="unity-progress-bar-empty">
-        <div id="unity-progress-bar-full"></div>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes">
+    <title>Unity WebGL Player | vera_test</title>
+    <link rel="shortcut icon" href="TemplateData/favicon.ico">
+    <link rel="stylesheet" href="TemplateData/style.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+      html, body { 
+        height: 100%; 
+        margin: 0; 
+        background: #000; 
+        overflow: hidden;
+        font-family: Arial, sans-serif;
+      }
+      #unity-container { 
+        position: fixed; 
+        inset: 0; 
+        width: 100%; 
+        height: 100%; 
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #000;
+      }
+      #unity-canvas { 
+        width: 100%;
+        height: 100%;
+        display: block; 
+      }
+      #unity-loading-bar {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 300px;
+        text-align: center;
+        color: white;
+        background: rgba(0, 0, 0, 0.8);
+        padding: 30px;
+        border-radius: 15px;
+        border: 2px solid #007bff;
+      }
+      #unity-logo {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 20px;
+        background: #007bff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        font-weight: bold;
+      }
+      #unity-progress-bar-empty {
+        width: 100%;
+        height: 12px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      #unity-progress-bar-full {
+        width: 0%;
+        height: 100%;
+        background: linear-gradient(90deg, #007bff, #00bfff);
+        border-radius: 10px;
+        transition: width 0.3s ease;
+      }
+      #loading-text {
+        margin: 15px 0;
+        color: #aaa;
+        font-size: 16px;
+      }
+      #unity-warning {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #cc0000;
+        color: white;
+        padding: 15px 25px;
+        border-radius: 10px;
+        display: none;
+        z-index: 1000;
+        max-width: 90%;
+        text-align: center;
+      }
+      #server-error {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.9);
+        color: white;
+        padding: 30px;
+        border-radius: 15px;
+        border: 2px solid #cc0000;
+        text-align: center;
+        max-width: 500px;
+        display: none;
+        z-index: 1001;
+      }
+      .server-btn {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 15px;
+        font-size: 14px;
+      }
+      .server-btn:hover {
+        background: #218838;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="unity-container">
+      <canvas id="unity-canvas" tabindex="-1"></canvas>
+      <div id="unity-loading-bar">
+        <div id="unity-logo">U</div>
+        <div id="loading-text">Загрузка игры...</div>
+        <div id="unity-progress-bar-empty">
+          <div id="unity-progress-bar-full"></div>
+        </div>
       </div>
-      
-      <div id="progress-percent">0%</div>
+      <div id="unity-warning"></div>
+      <div id="server-error">
+        <h3>Требуется локальный сервер</h3>
+        <p>Браузеры блокируют загрузку Unity WebGL через file:// протокол</p>
+        <div style="text-align: left; margin: 20px 0; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
+          <strong>Быстрые способы:</strong><br><br>
+          1. <strong>Python (рекомендуется):</strong><br>
+          Откройте терминал в папке игры и выполните:<br>
+          <code style="background: #333; padding: 5px; border-radius: 3px; display: inline-block; margin: 5px 0;">python -m http.server</code><br>
+          Затем откройте: <a href="http://localhost:8000" target="_blank" style="color: #00bfff;">http://localhost:8000</a><br><br>
+          
+          2. <strong>Unity Build and Run</strong><br>
+          Используйте кнопку "Build and Run" в Unity<br><br>
+          
+          3. <strong>VS Code Live Server</strong><br>
+          Установите расширение Live Server
+        </div>
+        <button class="server-btn" onclick="window.location.reload()">Попробовать снова</button>
+      </div>
     </div>
-    <div id="unity-warning"></div>
-  </div>
 
-  <script>
-    const canvas = document.getElementById('unity-canvas');
-    const loadingBar = document.getElementById('unity-loading-bar');
-    const progressBarFull = document.getElementById('unity-progress-bar-full');
-    const progressPercent = document.getElementById('progress-percent');
-    const warningBanner = document.getElementById('unity-warning');
+    <script>
+      // ===== ЭЛЕМЕНТЫ =====
+      const container = document.querySelector("#unity-container");
+      const canvas = document.querySelector("#unity-canvas");
+      const loadingBar = document.querySelector("#unity-loading-bar");
+      const progressBarFull = document.querySelector("#unity-progress-bar-full");
+      const warningBanner = document.querySelector("#unity-warning");
+      const loadingText = document.querySelector("#loading-text");
+      const serverError = document.querySelector("#server-error");
 
-    function unityShowBanner(msg, type) {
-      const div = document.createElement('div');
-      div.innerHTML = msg;
-      if (type === 'error') div.style = 'background:red;padding:8px;color:#fff';
-      else if (type === 'warning') div.style = 'background:yellow;padding:8px;color:#000';
-      warningBanner.appendChild(div);
-      warningBanner.style.display = 'block';
-      setTimeout(()=> { 
-        try { 
-          warningBanner.removeChild(div); 
-          if (warningBanner.children.length === 0) {
-            warningBanner.style.display = 'none';
+      // ===== ФУНКЦИИ =====
+      function updateLoadingText(text) {
+        loadingText.textContent = text;
+        console.log('[STATUS]', text);
+      }
+
+      function unityShowBanner(msg, type) {
+        console.log(`[UNITY ${type.toUpperCase()}]`, msg);
+        
+        const div = document.createElement('div');
+        div.innerHTML = msg;
+        
+        if (type === 'error') {
+          div.style.cssText = `
+            background: #dc3545;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin: 5px 0;
+            border-left: 4px solid #ff6b6b;
+          `;
+          
+          // Проверяем ошибку file://
+          if (msg.includes('file:// URL') || msg.includes('Loading web pages via a file://')) {
+            showServerError();
           }
-        } catch(e){} 
-      }, 5000);
-    }
-
-    const buildUrl = "/maze/Build";
-    const loaderUrl = buildUrl + "/Telegram.loader.js";
-    const config = {
-      dataUrl: buildUrl + "/telegram.data",
-      frameworkUrl: buildUrl + "/telegram.framework.js",
-      codeUrl: buildUrl + "/telegram.wasm",
-      streamingAssetsUrl: "StreamingAssets",
-      companyName: "DefaultCompany",
-      productName: "Maze",
-      productVersion: "1.0",
-      showBanner: unityShowBanner
-    };
-
-    loadingBar.style.display = "block";
-
-    const script = document.createElement('script');
-    script.src = loaderUrl;
-    script.onload = () => {
-      createUnityInstance(canvas, config, (progress) => {
-        const percent = Math.round(progress * 100);
-        progressBarFull.style.width = percent + "%";
-        progressPercent.textContent = percent + "%";
-      }).then((instance) => {
-        loadingBar.style.display = "none";
-        window.unityInstance = instance;
-
-        if (window.Telegram && Telegram.WebApp && Telegram.WebApp.initDataUnsafe) {
-          const u = Telegram.WebApp.initDataUnsafe.user;
-          if (u) {
-            instance.SendMessage("WebAppBridge", "OnTelegramUserData", JSON.stringify({
-              id: u.id, first_name: u.first_name, username: u.username
-            }));
-          }
+        } else if (type === 'warning') {
+          div.style.cssText = `
+            background: #ffc107;
+            color: #856404;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin: 5px 0;
+            border-left: 4px solid #ffd351;
+          `;
+          setTimeout(() => {
+            try { warningBanner.removeChild(div); } catch(e) {}
+          }, 5000);
+        } else {
+          div.style.cssText = `
+            background: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin: 5px 0;
+            border-left: 4px solid #34ce57;
+          `;
+          setTimeout(() => {
+            try { warningBanner.removeChild(div); } catch(e) {}
+          }, 3000);
         }
-      }).catch(err => {
-        console.error("createUnityInstance failed:", err);
-        unityShowBanner("Ошибка загрузки Unity: " + err, "error");
+        
+        warningBanner.appendChild(div);
+        warningBanner.style.display = 'block';
+      }
+
+      function showServerError() {
+        console.log('[ERROR] File protocol detected, showing server error message');
+        loadingBar.style.display = 'none';
+        serverError.style.display = 'block';
+      }
+
+      // ===== ПРОВЕРКА ПРОТОКОЛА =====
+      function checkProtocol() {
+        const isFileProtocol = window.location.protocol === 'file:';
+        const isChrome = navigator.userAgent.includes('Chrome');
+        
+        console.log('Protocol:', window.location.protocol);
+        console.log('Browser:', navigator.userAgent);
+        
+        if (isFileProtocol && isChrome) {
+          // Chrome + file:// = сразу показываем ошибку
+          setTimeout(showServerError, 1000);
+          return false;
+        }
+        
+        return true;
+      }
+
+      // ===== ЗАГРУЗКА UNITY =====
+      function loadUnity() {
+        updateLoadingText('Инициализация...');
+        
+        const buildUrl = "Build";
+        const loaderUrl = buildUrl + "/Telegram.loader.js";
+        const config = {
+          dataUrl: buildUrl + "/Telegram.data",
+          frameworkUrl: buildUrl + "/Telegram.framework.js",
+          codeUrl: buildUrl + "/Telegram.wasm",
+          streamingAssetsUrl: "StreamingAssets",
+          companyName: "DefaultCompany",
+          productName: "vera_test",
+          productVersion: "1.0",
+          showBanner: unityShowBanner,
+        };
+
+        console.log('Unity config:', config);
+
+        // Мобильная адаптация
+        if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+          container.className = "unity-mobile";
+          canvas.className = "unity-mobile";
+        } else {
+          canvas.style.width = "100%";
+          canvas.style.height = "100%";
+        }
+
+        loadingBar.style.display = "block";
+
+        const script = document.createElement("script");
+        script.src = loaderUrl;
+        
+        script.onload = () => {
+          updateLoadingText('Загрузчик загружен...');
+          
+          createUnityInstance(canvas, config, (progress) => {
+            const percent = Math.round(progress * 100);
+            progressBarFull.style.width = percent + "%";
+            updateLoadingText(`Загрузка игры: ${percent}%`);
+            
+            if (progress >= 1) {
+              updateLoadingText('Завершение загрузки...');
+            }
+          }).then((unityInstance) => {
+            console.log('✅ Unity успешно загружена!');
+            loadingBar.style.display = "none";
+            window.unityInstance = unityInstance;
+
+            // Отправка данных Telegram в Unity
+            if (window.Telegram && Telegram.WebApp && Telegram.WebApp.initDataUnsafe) {
+              const user = Telegram.WebApp.initDataUnsafe.user;
+              if (user) {
+                unityInstance.SendMessage("WebAppBridge", "OnTelegramUserData", JSON.stringify({
+                  id: user.id,
+                  first_name: user.first_name,
+                  username: user.username,
+                  language_code: user.language_code
+                }));
+                console.log('✅ Telegram данные отправлены в Unity');
+              } else {
+                console.warn("Telegram user data not available");
+              }
+            } else {
+              console.warn("Telegram WebApp not available (opened outside Telegram)");
+            }
+
+          }).catch((error) => {
+            console.error("Unity initialization failed:", error);
+            unityShowBanner("Ошибка загрузки: " + error.message, "error");
+          });
+        };
+
+        script.onerror = () => {
+          unityShowBanner("Не удалось загрузить загрузчик: " + loaderUrl, "error");
+        };
+
+        document.body.appendChild(script);
+      }
+
+      // ===== ИНИЦИАЛИЗАЦИЯ =====
+      document.addEventListener('DOMContentLoaded', () => {
+        console.log('=== STARTING GAME ===');
+        
+        // Проверяем WebGL поддержку
+        if (!canvas.getContext('webgl') && !canvas.getContext('webgl2')) {
+          unityShowBanner('Ваш браузер не поддерживает WebGL', 'error');
+          return;
+        }
+        
+        // Проверяем протокол
+        if (!checkProtocol()) {
+          return;
+        }
+        
+        // Даем время на отрисовку и запускаем
+        setTimeout(loadUnity, 500);
       });
-    };
-    script.onerror = () => unityShowBanner("Не удалось загрузить " + loaderUrl, "error");
-    document.body.appendChild(script);
-  </script>
-</body>
+
+      // ===== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =====
+      window.debugUnity = function() {
+        console.log('=== DEBUG INFO ===');
+        console.log('Canvas:', canvas);
+        console.log('WebGL supported:', !!(canvas.getContext('webgl') || canvas.getContext('webgl2')));
+        console.log('Protocol:', window.location.protocol);
+        console.log('Full URL:', window.location.href);
+        
+        // Проверяем файлы
+        const files = [
+          'Build/Telegram.loader.js',
+          'Build/Telegram.framework.js',
+          'Build/Telegram.wasm',
+          'Build/Telegram.data'
+        ];
+        
+        files.forEach(file => {
+          fetch(file)
+            .then(r => console.log(`${file}: ${r.ok ? 'OK' : 'NOT FOUND'} (${r.status})`))
+            .catch(e => console.log(`${file}: ERROR - ${e.message}`));
+        });
+      };
+    </script>
+  </body>
 </html>
